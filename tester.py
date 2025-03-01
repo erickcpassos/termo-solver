@@ -1,4 +1,5 @@
 import copy
+import json
 import statistics
 import random
 from pprint import pprint
@@ -12,6 +13,10 @@ for word in f:
 f.close()
 
 words = words_initial
+frequencies = {}
+
+with open('frequencies.json') as f:
+    frequencies = json.load(f)
 
 alphabet = 'abcdefghijklmnopqrstuvxwyz'
 
@@ -31,6 +36,10 @@ def reset_knowledge():
     knowledge = [copy.deepcopy(initial_space_knowledge) for i in range(5)]
     needed_letters = set()
     words = copy.deepcopy(words_initial)
+
+def word_score(word: str) -> int: # FUNCTION THAT CHOOSES A WORD TO GUESS EACH TIME
+    return -frequencies[word] # less score means more common
+
 
 def is_coherent(word: str) -> bool: 
     for letter in needed_letters:
@@ -66,7 +75,8 @@ def play(answer):
         #words_updated = copy.deepcopy(words) # this list will be used as words array in next iteration. it removes words already incoherent
 
         tries += 1
-        random.shuffle(words)
+        # random.shuffle(words)
+        words = sorted(words, key=word_score)
 
         guess = "ERRO"
 
