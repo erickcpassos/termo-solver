@@ -1,3 +1,4 @@
+import csv
 import copy
 import json
 import statistics
@@ -14,6 +15,16 @@ f.close()
 frequencies = {}
 with open('frequencies.json') as f: 
     frequencies = json.load(f)
+
+letter_frequency = {}
+with open('letter-frequency.csv', encoding='utf-8') as csv_file:
+    csv_reader = csv.reader(csv_file, delimiter=',')
+    for idx, row in enumerate(csv_reader):
+        if idx == 0: continue
+
+        letter = row[0].lower()
+        freq = float(row[1][:-1])
+        letter_frequency[letter] = freq
 
 
 words = words_initial
@@ -37,7 +48,19 @@ def reset_knowledge():
     words = copy.deepcopy(words_initial)
 
 def word_score(word: str) -> int: # FUNCTION THAT CHOOSES A WORD TO GUESS EACH TIME
-    return -frequencies[word]     # more frequent words first 
+    if word in frequencies.keys():
+        return -frequencies[word]     # more frequent words first 
+    else:
+        return 0
+
+def word_score_2(word: str) -> int: # calcula score com base na frequencia das letras usadas, priorizando maximo de letras diferentes tbm
+    letters = set(word)
+    score = 0
+    for l in word:
+        score += letter_frequency[l]
+
+    return -(score) 
+
 
 def is_coherent(word: str) -> bool: 
     for letter in needed_letters:

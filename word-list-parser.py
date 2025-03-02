@@ -2,40 +2,46 @@ from unidecode import unidecode
 import csv
 from pprint import pprint
 import json
+import sys
 
-word_bank = "dicio.txt" 
-freq_bank = "data.txt"
+if __name__ == '__main__':
 
-f = open(word_bank, "r", encoding='utf-8')
-possible_words = []
+    word_bank = "dicio.txt" 
+    freq_bank = "data.txt"
 
-for word in f:
-    word = unidecode(word[:-1].lower())
-    if len(word) != 5: continue
-    possible_words.append(word)
+    if len(sys.argv) > 1:
+        word_bank = sys.argv[1]
 
+    f = open(word_bank, "r", encoding='utf-8')
+    possible_words = []
 
-f.close()
-
-f = open("banco-palavras.txt", "w", encoding='utf-8')
-for word in possible_words:
-    f.write(word + "\n")
-
-f.close()
-
-frequencies = {}
-
-with open(freq_bank, encoding='utf-8') as csv_file:
-    csv_reader = csv.reader(csv_file, delimiter=',')
-    for idx, row in enumerate(csv_reader):
-        if idx == 0: continue
-
-        word = unidecode(row[0].lower())
+    for word in f:
+        word = unidecode(word[:-1].lower())
         if len(word) != 5: continue
-        frequencies[word] = int(row[1])
+        possible_words.append(word)
 
-with open('frequencies.json', 'w') as f:
-    json.dump(frequencies, f)
+
+    f.close()
+
+    f = open("banco-palavras.txt", "w", encoding='utf-8')
+    for word in possible_words:
+        f.write(word + "\n")
+
+    f.close()
+
+    frequencies = {}
+
+    with open(freq_bank, encoding='utf-8') as csv_file:
+        csv_reader = csv.reader(csv_file, delimiter=',')
+        for idx, row in enumerate(csv_reader):
+            if idx == 0: continue
+
+            word = unidecode(row[0].lower())
+            if len(word) != 5: continue
+            frequencies[word] = int(row[1])
+
+    with open('frequencies.json', 'w') as f:
+        json.dump(frequencies, f)
 
        
 
