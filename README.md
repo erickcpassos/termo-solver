@@ -28,7 +28,7 @@ $ py main.py test
 
 ## Próximas melhorias
 
-[] Possibilitar jogo automático interagindo com o browser
-[] Aceitar input de dicas para jogos em curso
-[] Funcionar para variantes como dueto e quarteto
-[] Adicionar bancos de dados em inglês para jogar Wordle
+- [ ] Possibilitar jogo automático interagindo com o browser
+- [ ] Aceitar input de dicas para jogos em curso
+- [ ] Funcionar para variantes como dueto e quarteto
+- [ ] Adicionar bancos de dados em inglês para jogar Wordle
