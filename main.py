@@ -5,6 +5,7 @@ import statistics
 import random
 import sys
 from pprint import pprint
+from knowledge import Knowledge
 
 f = open("banco-palavras.txt", "r");
 words_initial = []
@@ -30,22 +31,6 @@ with open('letter-frequency.csv', encoding='utf-8') as csv_file:
 words = words_initial
 alphabet = 'abcdefghijklmnopqrstuvxwyz'
 
-initial_space_knowledge = {}
-for c in alphabet:
-    initial_space_knowledge[c] = True
-
-knowledge = [copy.deepcopy(initial_space_knowledge) for i in range(5)]
-
-needed_letters = set()
-
-def reset_knowledge():
-    global knowledge
-    global needed_letters
-    global words
-
-    knowledge = [copy.deepcopy(initial_space_knowledge) for i in range(5)]
-    needed_letters = set()
-    words = copy.deepcopy(words_initial)
 
 def word_score(word: str) -> int: # FUNCTION THAT CHOOSES A WORD TO GUESS EACH TIME
     if word in frequencies.keys():
@@ -61,19 +46,7 @@ def word_score_2(word: str) -> int: # calcula score com base na frequencia das l
 
     return -(score) 
 
-
-def is_coherent(word: str) -> bool: 
-    for letter in needed_letters:
-        if letter not in word: return False
-    
-    for pos in range(5):
-        letter_in_pos = word[pos]
-        if not knowledge[pos][letter_in_pos]:
-            return False
-
-    return True
-
-def generate_response(answer, guess): # simulates user input for automatic testing
+def generate_response(answer: str, guess: str): # simulates user input for automatic testing
     response = ""
     for pos in range(5):
         if guess[pos] == answer[pos]:
@@ -86,134 +59,52 @@ def generate_response(answer, guess): # simulates user input for automatic testi
     return response
 
 
-def play():
+def play(num_of_instances:int = 1):
     tries = 0
-    while(True):
-        
-        global words
-        words_updated = copy.deepcopy(words) # this list will be used as words array in next iteration. it removes words already incoherent
+    instances = [Knowledge(id, words, word_score) for id in range(num_of_instances)]
+    curr_instance = 0
 
-        tries += 1
-        words = sorted(words, key=word_score)
+    while(curr_instance < num_of_instances):
 
-        guess = "ERRO"
-
-        for word in words:
+        while not instances[curr_instance].solved: 
             
-            if is_coherent(word):
-                guess = word
-                break
-            else:
-                words_updated.remove(word)
-
-        words = copy.deepcopy(words_updated) 
-        
-        if(guess == "ERRO"):
-            print("NO MORE GUESSES")
-            break
-
-        print(guess)
-
-        response = ""
-        while len(response) != 5 and response != "N": 
-            response = input("Input response (G, Y, B): ")
-
-        if response == "N":
-            words.remove(guess)
-            continue
-
-        if response == "GGGGG": break
-
-        for pos, val in enumerate(response):
-            if val == "G" or val == "Y":
-                needed_letters.add(guess[pos])
-
-        for pos, val in enumerate(response):
-            if val == "B":
-                if guess[pos] in needed_letters:
-                    knowledge[pos][guess[pos]] = False
-                    continue    
-
-                for i in range(5):
-                    knowledge[i][guess[pos]] = False
-            elif val == "Y":
-                needed_letters.add(guess[pos])
-                knowledge[pos][guess[pos]] = False
-            else:
-                needed_letters.add(guess[pos])
-                for lett in alphabet:
-                    if lett != guess[pos]: knowledge[pos][lett] = False
-                    else: knowledge[pos][guess[pos]] = True
+            guess = instances[curr_instance].get_guess()
+            print(f"GUESS FOR WORD {curr_instance+1}: {guess}")
+            for i in range(num_of_instances):
+                if instances[i].solved: continue
+                response = input(f"Input response for word {i+1} (G, Y, B): ").strip().upper()
+                instances[i].add_hint(guess, response)
     
+        curr_instance += 1
     return tries
 
-def test(answer):
+def test(answer: str, num_of_instances:int = 1):
     tries = 0
-    while(True):
-        
-        global words
-        #words_updated = copy.deepcopy(words) # this list will be used as words array in next iteration. it removes words already incoherent
+    instances = [Knowledge(id, words, word_score) for id in range(num_of_instances)]
+    curr_instance = 0
 
-        tries += 1
-        words = sorted(words, key=word_score)
+    while(curr_instance < num_of_instances):
 
-        guess = "ERRO"
+        while not instances[curr_instance].solved: 
+            
+            guess = instances[curr_instance].get_guess()
+            tries += 1
 
-        for word in words:
-            if is_coherent(word):
-                guess = word
-                break
-            else:
-                if word == answer: print(f"removed {word}")
-                #words_updated.remove(word) # removes incoherent words from word list. apparently, not necessarily faster
-
-        #words = copy.deepcopy(words_updated)
-        
-        if(guess == "ERRO"):
-            #pprint(words)
-            print("NO MORE GUESSES")
-            break
-
-
-        response = ""
-        while len(response) != 5 and response != "N": 
-            response = generate_response(answer, guess)
-
-
-        if response == "N":
-            words.remove(guess)
-            continue
-
-        if response == "GGGGG": break
-
-        for pos, val in enumerate(response):
-            if val == "G" or val == "Y":
-                needed_letters.add(guess[pos])
-
-        for pos, val in enumerate(response):
-            if val == "B":
-                if guess[pos] in needed_letters:
-                    knowledge[pos][guess[pos]] = False
-                    continue    
-
-                for i in range(5):
-                    knowledge[i][guess[pos]] = False
-            elif val == "Y":
-                needed_letters.add(guess[pos])
-                knowledge[pos][guess[pos]] = False
-            else:
-                needed_letters.add(guess[pos])
-                for lett in alphabet:
-                    if lett != guess[pos]: knowledge[pos][lett] = False
-                    else: knowledge[pos][guess[pos]] = True
+            for i in range(num_of_instances):
+                if instances[i].solved: continue
+                response = generate_response(answer, guess)
+                instances[i].add_hint(guess, response)
+    
+        curr_instance += 1
     
     return tries
-
-
 
 if __name__ == '__main__':
     if sys.argv[1] == 'play':
-        play()
+        if len(sys.argv) >= 3:
+            play(int(sys.argv[2]))
+        else:    
+            play()
 
     elif sys.argv[1] == 'test':
         tries = []
@@ -221,14 +112,15 @@ if __name__ == '__main__':
         games = 1000
         divs = 50
         loading_bar = "."*50
+
         for i in range(games):
-            reset_knowledge()
             answer = random.choice(words)
-            # print(f" ==== GAME {str(i)}: {answer} ==== ")
 
             num_tries = test(answer)
             if num_tries <= 6: wins += 1
             tries.append(num_tries)  
+
+            # prints loading bar
             if i%(games//divs) == 0: 
                 pos = i//(games//divs)
                 loading_bar = loading_bar[:pos] + '#' + loading_bar[pos+1:]
