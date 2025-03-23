@@ -6,6 +6,13 @@ import random
 import sys
 from pprint import pprint
 from knowledge import Knowledge
+from wordlistparser import get_word_list
+
+lang = 'en'
+if len(sys.argv) >= 4:
+    lang = sys.argv[3]
+    
+get_word_list(lang) # updates the information for the chosen language
 
 f = open("banco-palavras.txt", "r");
 words_initial = []
@@ -30,7 +37,6 @@ with open('letter-frequency.csv', encoding='utf-8') as csv_file:
 
 words = words_initial
 alphabet = 'abcdefghijklmnopqrstuvxwyz'
-
 
 def word_score(word: str) -> int: # FUNCTION THAT CHOOSES A WORD TO GUESS EACH TIME
     if word in frequencies.keys():
@@ -100,6 +106,7 @@ def test(answer: str, num_of_instances:int = 1):
     return tries
 
 if __name__ == '__main__':
+
     if sys.argv[1] == 'play':
         if len(sys.argv) >= 3:
             play(int(sys.argv[2]))

@@ -1,38 +1,35 @@
 # Termo Solver
 
-Esse script em Python é um assistente para encontrar a palavra secreta do jogo Termo.
+This Python script was built to be an assistant to find the secret word in the Brazilian game 'Termo' and other Wordle-like games.
 
-O programa te sugere palavras a serem inseridas no jogo e recebe as dicas sobre a posição das letras. Sua eficácia depende do banco de palavras, mas, em média, o programa utiliza 5.03 tentativas e vence o jogo em 86% das vezes.
+The program suggests words to be inserted into the game and receives the hints regarding the letters' position. Its efficiency depends on the word bank, but, on average, it takes 5.03 tries and wins the game in 86% (in Termo, in Brazilian Portuguese).
 
-Para usar o solver, basta rodar o arquivo main.py com o argumento play:
-
-```
-$ py main.py play [número de instâncias, default = 1]
-```
-
-O número de instâncias é o número de jogos simultâneos (2 para dueto, 4 para quarteto).
-
-O programa sugerirá uma palavra que você deverá inserir no Termo. Então, para cada instância, insira no programa as dicas obtidas no jogo. Isso é feito no formato de uma string de 5 caracteres como "BGGYB" ou a string "N":
-
-* "B" significa uma casa preta (letra não existe na palavra)
-* "Y" significa uma casa amarela (letra na posição incorreta)
-* "G" significa uma casa verde (letra na posição correta)
-* Em alguns casos, a palavra sugerida pelo programa pode não ser aceita no jogo. Nesse caso, responda com "N", em todas as instâncias, para que o programa sugira uma nova palavra.
-* Ao fim, quando o programa acertar a palavra, insira "GGGGG" para terminá-lo.
-* Em um jogo de múltiplas instâncias, o programa focará em resolvê-las uma a uma.
-
-O banco de palavras considerado pelo programa é o arquivo banco-palavras.txt. Caso queira alterá-lo, basta rodar o arquivo word-list-parser.py, alterando a variável 'word_bank' para o caminho do arquivo .txt desejado.
-
-O arquivo main.py também permite que o jogo simule várias partidas contra si mesmo para avaliar sua performance. O banco de palavras considerado também é o banco-palavras.txt e o número de partidas simuladas pode ser alterado na variável 'game' na \__main__. Para rodar o modo de teste, basta utilizar o argumento 'test' ao invés de 'play':
+To use the solver, run the file main.py with the argument play:
 
 ```
-$ py main.py test
+$ py main.py play [number of instances, default = 1] [language, default = en]
 ```
 
-## Próximas melhorias
+As of now, the available languages are English (en) and Brazilian Portuguese (br).
 
-- [ ] Possibilitar jogo automático interagindo com o browser
-- [x] Aceitar input de dicas para jogos em curso
-- [x] Funcionar para variantes como dueto e quarteto
-- [x] Adicionar bancos de dados em inglês para jogar Wordle
-- [ ] Adicionar frequência das palavras em inglês
+The number of instances is the name of simultaneous games (in Termo, there is the option to play more than one word at once).
+
+For example, to play a usual Wordle game, you should run:
+
+```
+$ py main.py play 1 en   // simply 'py main.py play' would also work because of the default values
+```
+
+The program will suggest a word that you should enter in the game. Then, for each instance, enter the hints obtained back into the program. This is done either as a 5-letter string, such as "BGGYB", or as the string "N".
+
+* "B" means a black square (the letter does not exist in the word)
+* "Y" means a yellow square (the letter is in the wrong position)
+* "G" means a green square (the letter is in the correct position)
+* In some cases, the word suggested by the program might not be accepted in the game. In this case, answer with "N", in all instances, so that the game can suggest a new word.
+* In the end, when the program finds the correct word, insert "GGGGG" to terminate it.
+* In a multi-instance game, the program will try to solve them one by one.
+
+## Next improvements
+
+- [ ] Implement interaction with the browser to obtain hints automatically
+- [ ] Improve word score calculation for English word list

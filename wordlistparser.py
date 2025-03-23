@@ -4,13 +4,27 @@ from pprint import pprint
 import json
 import sys
 
-if __name__ == '__main__':
+def get_word_list(language="en"):
 
-    word_bank = "dicio.txt" 
-    freq_bank = "data.txt"
+    word_bank = ""
+    freq_bank = ""
 
-    if len(sys.argv) > 1:
-        word_bank = sys.argv[1]
+    supported_languages = ['br', 'en']
+
+    if language not in supported_languages:
+        language = 'en'
+
+    print("updating word list to language: " + language)
+
+    if language == 'br':
+        word_bank = "dicio.txt" 
+        freq_bank = "data.txt"
+    elif language == 'en':
+        word_bank = "english-words.txt"
+        freq_bank = "data.txt"
+
+    #if len(sys.argv) > 1:
+    #    word_bank = sys.argv[1]
 
     f = open(word_bank, "r", encoding='utf-8')
     possible_words = []
@@ -43,5 +57,7 @@ if __name__ == '__main__':
     with open('frequencies.json', 'w') as f:
         json.dump(frequencies, f)
 
+
+    
        
 
